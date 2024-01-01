@@ -1,0 +1,74 @@
+{
+    "log": {
+        "loglevel": "warning"
+    },
+    "routing": {
+        "domainStrategy": "IPIfNonMatch",
+        "rules": [
+            {
+                "type": "field",
+                "port": "80",
+                "network": "udp",
+                "outboundTag": "block"
+            },
+            {
+                "type": "field",
+                "ip": ["geoip:private"],
+                "outboundTag": "block"
+            }
+        ]
+    },
+    "inbounds": [
+        {
+            "listen": "0.0.0.0",
+            "port": 80,
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "5ed63d37-b750-4ee2-9006-2f9ec4b841f4",
+                        "flow": ""
+                    }
+                ],
+                "decryption": "none"
+            },
+            "streamSettings": {
+                "network": "grpc",
+                "security": "reality",
+                "realitySettings": {
+                    "show": false,
+                    "dest": "www.mehrnews.com:443",
+                    "xver": 0,
+                    "serverNames": ["www.mehrnews.com"],
+                    "privateKey": "kOsBHSgxhAfCeQIQyJvupiXTmQrMmsqi6y6Wc5OQZXc",
+                    "shortIds": ["d49d578f280fd83a"]
+                },
+                "grpcSettings": {
+                    "serviceName": "@David"
+                }
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls", "quic"]
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "freedom",
+            "tag": "direct"
+        },
+        {
+            "protocol": "blackhole",
+            "tag": "block"
+        }
+    ],
+    "policy": {
+        "levels": {
+            "0": {
+                "handshake": 2,
+                "connIdle": 120
+            }
+        }
+    }
+}

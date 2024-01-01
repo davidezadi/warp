@@ -1,0 +1,64 @@
+{
+    "log": {
+        "disabled": false,
+        "level": "info",
+        "timestamp": true
+    },
+    "dns": {
+        "servers": [
+            {
+                "tag": "google-tls",
+                "address": "local",
+                "address_strategy": "prefer_ipv4",
+                "strategy": "ipv4_only",
+                "detour": "direct"
+            },
+            {
+                "tag": "google-udp",
+                "address": "8.8.8.8",
+                "address_strategy": "prefer_ipv4",
+                "strategy": "prefer_ipv4",
+                "detour": "direct"
+            }
+        ],
+        "strategy": "prefer_ipv4",
+        "disable_cache": false,
+        "disable_expire": false
+    },
+    "inbounds": [
+        {
+            "type": "shadowtls",
+            "tag": "shadowtls-in",
+            "listen": "0.0.0.0",
+            "listen_port": 80,
+            "handshake": {
+                "server": "google.com",
+                "server_port": 443
+            },
+            "detour": "ssin"
+        },
+        {
+            "type": "shadowsocks",
+            "tag": "ssin",
+            "listen": "127.0.0.1",
+            "listen_port": 80,
+            "method": "2022-blake3-chacha20-poly1305",
+            "password": "SS9xpkM0BXSfSyPqzXo6hE94TSMG6P0EHDEb9NgSZ3k="
+        }
+    ],
+    "outbounds": [
+        {
+            "type": "direct",
+            "tag": "direct"
+        },
+        {
+            "type": "block",
+            "tag": "block"
+        },
+        {
+            "type": "dns",
+            "tag": "dns-out"
+        }
+    ]
+
+}

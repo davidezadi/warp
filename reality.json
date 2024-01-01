@@ -1,0 +1,100 @@
+{
+    "log":{
+        "access":"/dev/null",
+        "error":"/dev/null",
+        "loglevel":"none"
+    },
+    
+ "dns": {
+    "fakeip": {
+      "enabled": true,
+      "inet4_range": "198.18.0.0/15",
+      "inet6_range": "fc00::/18"
+    },
+    "independent_cache": true,
+    "rules": [
+      {
+        "disable_cache": true,
+        "inbound": [
+          "tun-in"
+        ],
+        "server": "dns-fake"
+      }
+    ],
+    "servers": [
+      {
+        "address": "tcp://8.8.8.8",
+        "address_resolver": "dns-direct",
+        "strategy": "prefer_ipv4",
+        "tag": "dns-remote"
+      },
+      {
+        "address": "tcp://1.1.1.1",
+        "address_resolver": "dns-local",
+        "detour": "direct",
+        "strategy": "prefer_ipv4",
+        "tag": "dns-direct"
+      },
+      {
+        "address": "local",
+        "detour": "direct",
+        "tag": "dns-local"
+      },
+      {
+        "address": "rcode://success",
+        "tag": "dns-block"
+      },
+      {
+        "address": "fakeip",
+        "strategy": "ipv4_only",
+        "tag": "dns-fake"
+      }
+    ]
+  },
+  
+    "inbounds": [
+        {
+            "port": 80, 
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "5ed63d37-b750-4ee2-9006-2f9ec4b841f4", // run `xray uuid` to generate
+                        "flow": "xtls-rprx-vision"
+                    }
+                ],
+                "decryption": "none"
+            },
+            "streamSettings": {
+                "network": "tcp",
+                "security": "reality",
+                "realitySettings": {
+                    "dest": "nitdgp.ac.in:443", // You can also use `1.1.1.1:443` as dest
+                    "serverNames": [
+                        "nitdgp.ac.in"    // If you use `1.1.1.1:443` as dest, then you can leave `serverNames` empty, it is a possible ways to bypass Iran's internet speed restrictions.
+                    ],
+                    "privateKey": "kJTGkJItYTTl3APOZF4fN-fUReHARx9mgTgXGZC9elE", // run `xray x25519` to generate. Public and private keys need to be corresponding.
+                    "shortIds": [// Required, list of shortIds available to clients, can be used to distinguish different clients
+                        "", // If this item exists, client shortId can be empty
+                        "0123456789abcdef" // 0 to f, length is a multiple of 2, maximum length is 16
+                    ]
+                }
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": [
+                    "http",
+                    "tls",
+                    "quic"
+                ],
+                "routeOnly": true
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "freedom",
+            "tag": "direct"
+        }
+    ]
+}
